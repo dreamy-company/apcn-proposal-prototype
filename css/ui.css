@@ -1,0 +1,113 @@
+/* ============================================================
+   Controls + bottom navigation
+   ============================================================ */
+
+/* ---- dock -------------------------------------------------------- */
+.dock { display: flex; flex-direction: column; align-items: center; gap: 10px; z-index: 50; width: min(94vw, 720px); }
+
+/* ---- nav --------------------------------------------------------- */
+.nav {
+  display: flex; gap: 4px; background: var(--navy); border-radius: 40px;
+  padding: 5px; box-shadow: 0 8px 24px -10px rgba(6,15,30,.6);
+}
+.nav button {
+  background: none; border: 0; color: #cdd7e6; padding: 8px 14px;
+  border-radius: 30px; font-size: 12.5px; letter-spacing: .02em;
+  display: flex; align-items: center; gap: 6px; transition: color .2s, background .2s;
+}
+.nav button:hover { color: var(--white); }
+.nav button.active { color: var(--navy); background: var(--gold); }
+.nav button svg { width: 15px; height: 15px; }
+
+/* ---- tools ------------------------------------------------------- */
+.tools { display: flex; align-items: center; gap: 4px; }
+.tools button {
+  width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--line);
+  background: var(--white); color: var(--navy); display: grid; place-items: center;
+  transition: background .18s, color .18s, transform .1s;
+}
+.tools button:hover { background: var(--navy); color: var(--gold); }
+.tools button:active { transform: scale(.94); }
+.tools button svg { width: 17px; height: 17px; }
+.tools .divider { width: 1px; height: 22px; background: var(--line); margin: 0 4px; }
+
+/* ============================================================
+   Overlays: search, zoom, toast, notification
+   ============================================================ */
+
+/* ---- search-box -------------------------------------------------- */
+.overlay {
+  position: fixed; inset: 0; z-index: 200; display: none;
+  background: rgba(5,15,30,.72); backdrop-filter: blur(4px);
+  align-items: flex-start; justify-content: center; padding: 8vh 16px;
+}
+.overlay.open { display: flex; }
+.search-box { width: min(680px, 96vw); }
+.search-box input {
+  width: 100%; font-size: 18px; padding: 16px 18px; border: 0; border-radius: 10px;
+  font-family: var(--serif); background: var(--white); color: var(--navy);
+  box-shadow: 0 20px 50px -20px rgba(0,0,0,.6);
+}
+
+/* ---- search-results ---------------------------------------------- */
+.search-results { margin-top: 12px; max-height: 60vh; overflow: auto; border-radius: 10px; }
+.search-results button {
+  width: 100%; text-align: left; background: var(--white); border: 0;
+  border-bottom: 1px solid var(--line); padding: 12px 16px; display: flex; gap: 12px; align-items: baseline;
+}
+.search-results button:hover { background: var(--paper-2); }
+.search-results .r-kind { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--gold); min-width: 78px; }
+.search-results .r-title { color: var(--navy); font-size: 14px; }
+.search-empty { color: #cdd7e6; text-align: center; padding: 24px; font-size: 14px; }
+
+/* ---- zoom-view --------------------------------------------------- */
+.zoom-view {
+  position: fixed; inset: 0; z-index: 210; display: none; background: rgba(5,15,30,.92);
+  cursor: zoom-out; overflow: hidden;
+}
+.zoom-view.open { display: block; }
+.zoom-view__inner { position: absolute; top: 50%; left: 50%; transform-origin: center; will-change: transform; }
+
+/* ---- toast ------------------------------------------------------- */
+.toast {
+  position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: var(--navy); color: var(--white); padding: 12px 20px; border-radius: 40px;
+  font-size: 13px; z-index: 300; opacity: 0; pointer-events: none; transition: .3s;
+  border: 1px solid var(--line-gold);
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ---- notif ------------------------------------------------------- */
+.notif {
+  position: fixed; top: 16px; left: 50%; transform: translateX(-50%) translateY(-140%);
+  width: min(560px, 92vw); background: var(--navy); color: var(--paper);
+  border: 1px solid var(--line-gold); border-radius: 12px; padding: 12px 14px;
+  display: flex; align-items: center; gap: 12px; z-index: 120; transition: transform .5s var(--ease-soft);
+  box-shadow: var(--shadow-book);
+}
+.notif.show { transform: translateX(-50%) translateY(0); }
+.notif__dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gold); flex: none; }
+.notif__text { flex: 1; font-size: 13px; line-height: 1.4; }
+.notif__text b { color: var(--gold); }
+.notif button.notif__go { background: var(--gold); color: var(--navy); border: 0; border-radius: 20px; padding: 6px 12px; font-size: 12px; font-weight: 600; }
+.notif button.notif__x { background: none; border: 0; color: #9fb0c6; font-size: 18px; line-height: 1; padding: 4px; }
+
+/* ---- mobile slider (.mtrack) ------------------------------------- */
+/* (handled in book.css for layout; nav tweaks below) */
+
+/* ---- @media (max-width: 767px) responsive rules ------------------ */
+@media (max-width: 767px) {
+  .nav button span { display: none; }
+  .nav button { padding: 9px 12px; }
+}
+
+/* ---- small helper: mobile grid relax ----------------------------- */
+@media (max-width: 767px) {
+  .p-welcome, .p-about, .p-plat, .p-emerg, .p-social__grid { grid-template-columns: 1fr; }
+  .p-speakers__grid { grid-template-columns: repeat(3, 1fr); }
+  .p-faculty__grid { grid-template-columns: repeat(4, 1fr); }
+  .p-committee__grid, .exh-list { grid-template-columns: 1fr; }
+  .p-welcome__portrait { min-height: 34%; }
+  .p-map__frame { min-height: 220px; }
+  .page__body { padding: 20px; overflow: auto; }
+}

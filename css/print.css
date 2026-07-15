@@ -1,0 +1,11 @@
+/* print */
+@media print {
+  .dock, .scrub, .brandmark, .tools, .notif, .overlay { display: none !important; }
+  .stage { display: block; background: #fff; }
+  .book { width: 100%; aspect-ratio: auto; perspective: none; filter: none; }
+  .book__pages { position: static; }
+  .paper { position: static; width: 100%; height: auto; transform: none !important; }
+  .paper__face--front { position: static; page-break-after: always; }
+  .paper__face--back  { position: static; page-break-after: always; transform: none; }
+  .paper__face { position: static; min-height: 60vh; }
+}
