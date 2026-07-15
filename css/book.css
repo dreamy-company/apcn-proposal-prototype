@@ -130,9 +130,24 @@ a { color: inherit; }
   display: flex; flex-direction: column;
   overflow: hidden;
 }
-.page__body { flex: 1; min-height: 0; padding: var(--gutter); overflow: auto; }
+.page__body { flex: 1; min-height: 0; padding: var(--gutter); overflow: auto; -webkit-overflow-scrolling: touch; }
 .page__body::-webkit-scrollbar { width: 3px; }
 .page__body::-webkit-scrollbar-thumb { background: rgba(0,0,0,.12); border-radius: 2px; }
+
+/* scroll indicator — sticky gradient fade at bottom when content overflows */
+.page__body.has-more::after {
+  content: "";
+  position: sticky;
+  bottom: 0;
+  display: block;
+  height: 36px;
+  background: linear-gradient(transparent, rgba(6,15,30,.10));
+  pointer-events: none;
+  margin-top: -36px;
+}
+.pat-navy .page__body.has-more::after {
+  background: linear-gradient(transparent, rgba(0,0,0,.32));
+}
 .page.pat-navy  { color: var(--paper); }
 .page.pat-paper { color: var(--ink); }
 
@@ -183,14 +198,18 @@ a { color: inherit; }
 /* ---- mobile: single-page slider --------------------------------- */
 .mtrack { position: absolute; inset: 0; overflow: hidden; }
 .mtrack__row { position: absolute; inset: 0; display: flex; will-change: transform; }
-.mslide { position: relative; flex: 0 0 100%; height: 100%; overflow: hidden; }
+/* width is set per-slide inline by flipbook.js (100/N %); flex-basis:auto
+   lets that width win so each slide is exactly one page, not the whole row. */
+.mslide { position: relative; flex: 0 0 auto; height: 100%; overflow: hidden; }
 .mslide__shade { position: absolute; inset: 0; pointer-events: none; opacity: 0;
   background: linear-gradient(90deg, rgba(6,15,30,.35), transparent 40%); }
 
 @media (max-width: 767px) {
-  .book { width: min(99vw, calc((100dvh - 100px) * var(--ar)));
-          aspect-ratio: var(--ar) / 1; perspective: none; }
+  .book { width: min(99vw, calc((100dvh - 170px) * var(--ar)));
+          aspect-ratio: var(--ar) / 1; perspective: none;
+          filter: drop-shadow(0 8px 20px rgba(6,15,30,.2)); }
   .book__pages { display: none; }
+  .book__gutter-shadow { display: none; }
   .brandmark { top: 10px; right: 12px; }
 }
 @media (min-width: 768px) { .mtrack { display: none; } }

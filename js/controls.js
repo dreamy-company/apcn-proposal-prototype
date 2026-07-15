@@ -83,6 +83,16 @@ function initControls(book, fb){
   toolBtn("share").onclick = share;
   toolBtn("sound").onclick = toggleSound;
 
+  /* ---------- mobile prev/next (shown directly under the slide) ---------- */
+  const mnav = $(".mnav");
+  if(mnav){
+    mnav.innerHTML = `
+      <button data-m="prev" aria-label="Previous page">${ICON.prev}</button>
+      <button data-m="next" aria-label="Next page">${ICON.next}</button>`;
+    mnav.querySelector('[data-m="prev"]').onclick = () => fb.prev();
+    mnav.querySelector('[data-m="next"]').onclick = () => fb.next();
+  }
+
   /* ---------- scrub bar ---------- */
   const track = $(".scrub__track"), fill = $(".scrub__fill"), thumb = $(".scrub__thumb"), label = $(".scrub__label");
   const paint = () => {
@@ -237,6 +247,19 @@ function initControls(book, fb){
   paint(); setActiveNav(fb.current());
 }
 
+function initScrollHints() {
+  document.querySelectorAll('.page__body').forEach(el => {
+    const update = () => {
+      const more = el.scrollHeight > el.clientHeight + 4
+                && (el.scrollTop + el.clientHeight) < (el.scrollHeight - 12);
+      el.classList.toggle('has-more', more);
+    };
+    el.addEventListener('scroll', update, { passive: true });
+    new ResizeObserver(update).observe(el);
+  });
+}
+
 const book = BOOK_DATA;
 const fb = new Flipbook(book, document.getElementById("book"));
 initControls(book, fb);
+initScrollHints();

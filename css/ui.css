@@ -5,6 +5,9 @@
 /* ---- dock -------------------------------------------------------- */
 .dock { display: flex; flex-direction: column; align-items: center; gap: 10px; z-index: 50; width: min(94vw, 720px); }
 
+/* ---- mobile page-turn arrows (below the slide) ------------------- */
+.mnav { display: none; }
+
 /* ---- nav --------------------------------------------------------- */
 .nav {
   display: flex; gap: 4px; background: var(--navy); border-radius: 40px;
@@ -99,6 +102,22 @@
 @media (max-width: 767px) {
   .nav button span { display: none; }
   .nav button { padding: 9px 12px; }
+
+  /* centre the whole column so the arrows sit right under the slide */
+  .stage { justify-content: center; }
+  .book-wrap { flex: 0 1 auto; }
+
+  .mnav { display: flex; justify-content: center; gap: 48px; margin: 12px 0 2px; z-index: 50; }
+  .mnav button {
+    width: 46px; height: 46px; border-radius: 50%;
+    border: 1px solid var(--line); background: var(--white); color: var(--navy);
+    display: grid; place-items: center; box-shadow: 0 6px 16px -8px rgba(6,15,30,.5);
+  }
+  .mnav button:active { transform: scale(.94); }
+  .mnav button svg { width: 20px; height: 20px; }
+
+  /* prev/next now live under the slide — drop the duplicates from the tools row */
+  .tools [data-t="prev"], .tools [data-t="next"], .tools .divider { display: none; }
 }
 
 /* ---- small helper: mobile grid relax ----------------------------- */
@@ -109,5 +128,5 @@
   .p-committee__grid, .exh-list { grid-template-columns: 1fr; }
   .p-welcome__portrait { min-height: 34%; }
   .p-map__frame { min-height: 220px; }
-  .page__body { padding: 20px; overflow: auto; }
+  .page__body { padding: 20px 20px 30px; overflow: auto; -webkit-overflow-scrolling: touch; }
 }

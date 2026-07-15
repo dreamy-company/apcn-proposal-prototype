@@ -237,10 +237,25 @@ class Flipbook {
     };
 
     bookEl.addEventListener("pointerdown", down);
-    bookEl.addEventListener("pointermove", move);
+    bookEl.addEventListener("pointermove", move, { passive: false });
     bookEl.addEventListener("pointerup", up);
     bookEl.addEventListener("pointercancel", up);
-    // clicking a link inside shouldn't start a drag-turn: allow small movement
+
+    // two-finger horizontal trackpad swipe → exactly ONE page turn per gesture.
+    // A single swipe emits a long stream of wheel events (with momentum), so we
+    // turn immediately on the first significant delta, then lock until the
+    // stream goes quiet — otherwise the momentum tail flips through every slide.
+    let wheelLock = false, wheelEndTimer = null;
+    bookEl.addEventListener("wheel", e => {
+      const ax = Math.abs(e.deltaX), ay = Math.abs(e.deltaY);
+      if(ax < ay * 0.8 || ax < 8) return;   // vertical-dominant → let inner scroll handle it
+      e.preventDefault();
+      clearTimeout(wheelEndTimer);
+      wheelEndTimer = setTimeout(() => { wheelLock = false; }, 260);
+      if(wheelLock || this.animating) return;
+      wheelLock = true;                      // one turn now; re-armed only after the swipe settles
+      if(e.deltaX > 0) this.next(); else this.prev();
+    }, { passive: false });
   }
 
   /* ---- navigation ------------------------------------------------- */
