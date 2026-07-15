@@ -254,7 +254,9 @@ class Flipbook {
       wheelEndTimer = setTimeout(() => { wheelLock = false; }, 260);
       if(wheelLock || this.animating) return;
       wheelLock = true;                      // one turn now; re-armed only after the swipe settles
-      if(e.deltaX > 0) this.next(); else this.prev();
+      // follow the finger like the drag does: swipe right → go right (previous),
+      // swipe left → go left (next).
+      if(e.deltaX > 0) this.prev(); else this.next();
     }, { passive: false });
   }
 
