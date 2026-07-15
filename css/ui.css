@@ -8,6 +8,39 @@
 /* ---- mobile page-turn arrows (below the slide) ------------------- */
 .mnav { display: none; }
 
+/* ---- mobile top search field ------------------------------------- */
+.msearch { display: none; }
+@media (max-width: 767px) {
+  .msearch {
+    display: flex; align-items: center; gap: 8px;
+    position: fixed; top: 98px; left: 50%; transform: translateX(-50%);
+    width: 92vw; max-width: 460px; z-index: 70;
+    background: var(--white); border: 1px solid var(--line); border-radius: 26px;
+    padding: 9px 16px; box-shadow: 0 8px 24px -12px rgba(6,15,30,.5);
+  }
+  .msearch__ico { display: grid; place-items: center; color: var(--navy); flex: none; }
+  .msearch__ico svg { width: 18px; height: 18px; }
+  .msearch input {
+    flex: 1; min-width: 0; border: 0; outline: none; background: none;
+    font-family: var(--sans); font-size: 14px; color: var(--navy);
+  }
+  .msearch input::placeholder { color: var(--ink-soft); }
+  .msearch__results {
+    position: absolute; top: calc(100% + 8px); left: 0; right: 0;
+    max-height: 54vh; overflow: auto; border-radius: 14px; background: var(--white);
+    box-shadow: 0 20px 50px -18px rgba(6,15,30,.55); border: 1px solid var(--line);
+  }
+  .msearch__results:empty { display: none; }
+  .msearch__results button {
+    width: 100%; text-align: left; background: var(--white); border: 0;
+    border-bottom: 1px solid var(--line); padding: 12px 16px; display: flex; gap: 12px; align-items: baseline;
+  }
+  .msearch__results button:hover { background: var(--paper-2); }
+  .msearch__results .r-kind { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--gold); min-width: 74px; }
+  .msearch__results .r-title { color: var(--navy); font-size: 14px; }
+  .msearch__results .search-empty { color: var(--ink-soft); text-align: center; padding: 20px; font-size: 13px; }
+}
+
 /* ---- nav --------------------------------------------------------- */
 .nav {
   display: flex; gap: 4px; background: var(--navy); border-radius: 40px;
@@ -33,6 +66,24 @@
 .tools button:active { transform: scale(.94); }
 .tools button svg { width: 17px; height: 17px; }
 .tools .divider { width: 1px; height: 22px; background: var(--line); margin: 0 4px; }
+
+/* Desktop: keep the arrows on the left, push the utility icons to the right. */
+@media (min-width: 768px) {
+  .tools { width: 100%; padding: 0 8px; gap: 6px; }
+  .tools .divider { margin-left: auto; margin-right: 10px; }
+
+  /* Section navigator: vertically centered on the right edge. */
+  .nav {
+    position: fixed; top: 50%; right: 22px; transform: translateY(-50%); z-index: 60;
+    flex-direction: column; align-items: stretch; gap: 3px;
+    border-radius: 22px;
+  }
+  .nav button { justify-content: flex-start; padding: 9px 16px; border-radius: 16px; }
+  .nav button svg { width: 16px; height: 16px; }
+
+  /* the dock now carries only the tools row (nav floated to the corner) */
+  .dock { width: min(94vw, 720px); }
+}
 
 /* ============================================================
    Overlays: search, zoom, toast, notification
@@ -103,8 +154,8 @@
   .nav button span { display: none; }
   .nav button { padding: 9px 12px; }
 
-  /* centre the whole column so the arrows sit right under the slide */
-  .stage { justify-content: center; }
+  /* centre the book group, reserving room for the top header (logo + search) */
+  .stage { justify-content: center; padding-top: 150px; }
   .book-wrap { flex: 0 1 auto; }
 
   .mnav { display: flex; justify-content: center; gap: 48px; margin: 12px 0 2px; z-index: 50; }
@@ -116,8 +167,8 @@
   .mnav button:active { transform: scale(.94); }
   .mnav button svg { width: 20px; height: 20px; }
 
-  /* prev/next now live under the slide — drop the duplicates from the tools row */
-  .tools [data-t="prev"], .tools [data-t="next"], .tools .divider { display: none; }
+  /* mobile controls: only the ‹ › arrows (in .mnav) — hide the utility cluster */
+  .tools { display: none; }
 }
 
 /* ---- small helper: mobile grid relax ----------------------------- */
@@ -128,5 +179,5 @@
   .p-committee__grid, .exh-list { grid-template-columns: 1fr; }
   .p-welcome__portrait { min-height: 34%; }
   .p-map__frame { min-height: 220px; }
-  .page__body { padding: 20px 20px 30px; overflow: auto; -webkit-overflow-scrolling: touch; }
+  .page__body { padding: 24px 22px 34px; overflow: auto; -webkit-overflow-scrolling: touch; }
 }

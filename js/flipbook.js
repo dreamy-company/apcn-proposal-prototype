@@ -88,6 +88,16 @@ class Flipbook {
     this.mrow.querySelectorAll(".mslide").forEach(s => s.style.width = `${100/this.N}%`);
   }
 
+  /* On desktop the book is two pages wide. The cover is only the right half
+     and the last page only the left half, so shift the book by half a page
+     (25% of its width) to centre that single page; 0 for full spreads. */
+  centerShift(f){
+    if(!this.isDesktop) return "";
+    if(f <= 0) return "translateX(-25%)";
+    if(f >= this.Np) return "translateX(25%)";
+    return "translateX(0)";
+  }
+
   /* ---- resting layout --------------------------------------------- */
   layout(animate){
     if(this.isDesktop){
@@ -100,7 +110,9 @@ class Flipbook {
         p.querySelectorAll(".turn-shadow").forEach(s => s.style.opacity = 0);
       }
       this.gutter && (this.gutter.style.opacity = 0);
+      this.root.style.transform = this.centerShift(this.flipped);
     } else {
+      this.root.style.transform = "";
       this.setMobile(this.mIndex, false);
     }
     this.onChange(this.currentId());
@@ -138,12 +150,14 @@ class Flipbook {
     if(this.animating || this.flipped >= this.Np) return;
     const paper = this.papers[this.flipped];
     paper.style.transition = "none"; paper.style.zIndex = 3*this.Np;
+    this.root.style.transform = this.centerShift(this.flipped + 1);  // slide to centre as it turns
     this.animateTurn(paper, 0, -180, () => { this.flipped++; this.layout(false); });
   }
   turnBack(){
     if(this.animating || this.flipped <= 0) return;
     const paper = this.papers[this.flipped-1];
     paper.style.transition = "none"; paper.style.zIndex = 3*this.Np;
+    this.root.style.transform = this.centerShift(this.flipped - 1);  // slide to centre as it turns
     this.animateTurn(paper, -180, 0, () => { this.flipped--; this.layout(false); });
   }
 
@@ -242,21 +256,23 @@ class Flipbook {
     bookEl.addEventListener("pointercancel", up);
 
     // two-finger horizontal trackpad swipe → exactly ONE page turn per gesture.
-    // A single swipe emits a long stream of wheel events (with momentum), so we
-    // turn immediately on the first significant delta, then lock until the
-    // stream goes quiet — otherwise the momentum tail flips through every slide.
-    let wheelLock = false, wheelEndTimer = null;
+    // A single swipe emits a long stream of wheel events (with momentum). We sum
+    // deltaX across the gesture and turn once it becomes decisive, then lock until
+    // the stream goes quiet — so both directions fire symmetrically and the
+    // momentum tail can't flip through every slide.
+    let wheelAcc = 0, wheelLock = false, wheelEndTimer = null;
     bookEl.addEventListener("wheel", e => {
-      const ax = Math.abs(e.deltaX), ay = Math.abs(e.deltaY);
-      if(ax < ay * 0.8 || ax < 8) return;   // vertical-dominant → let inner scroll handle it
+      if(Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;   // vertical-dominant → let inner scroll handle it
       e.preventDefault();
       clearTimeout(wheelEndTimer);
-      wheelEndTimer = setTimeout(() => { wheelLock = false; }, 260);
+      wheelEndTimer = setTimeout(() => { wheelLock = false; wheelAcc = 0; }, 200);
       if(wheelLock || this.animating) return;
-      wheelLock = true;                      // one turn now; re-armed only after the swipe settles
-      // follow the finger like the drag does: swipe right → go right (previous),
-      // swipe left → go left (next).
-      if(e.deltaX > 0) this.prev(); else this.next();
+      wheelAcc += e.deltaX;
+      if(Math.abs(wheelAcc) < 30) return;    // wait until the swipe is decisive
+      wheelLock = true;                      // one turn per swipe; re-armed after it settles
+      // inverted swipe: swipe right → next, swipe left → previous.
+      if(wheelAcc > 0) this.next(); else this.prev();
+      wheelAcc = 0;
     }, { passive: false });
   }
 
@@ -268,6 +284,19 @@ class Flipbook {
       return this.pages[idx].id;
     }
     return this.pages[this.mIndex].id;
+  }
+
+  /* progress / navigation surface used by the controls (scrub bar, labels) */
+  current(){ return this.currentId(); }
+  get total(){ return this.N; }
+  progress(){
+    return this.isDesktop
+      ? clamp(2*this.flipped, 0, this.N-1)/(this.N-1)
+      : this.mIndex/(this.N-1);
+  }
+  goToProgress(f){
+    const idx = Math.round(f*(this.N-1));
+    this.goToId(this.pages[idx].id, { animate: false });
   }
 
   goToId(id, opts = {}){

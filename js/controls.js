@@ -154,6 +154,24 @@ function initControls(book, fb){
   });
   so.addEventListener("click", e => { if(e.target === so) closeSearch(); });
 
+  /* ---------- mobile top search field (reuses the search index q) ---------- */
+  const ms = $(".msearch");
+  if(ms){
+    const mi = ms.querySelector("input"), mr = ms.querySelector(".msearch__results");
+    mi.addEventListener("input", () => {
+      const rs = q(mi.value);
+      if(!mi.value.trim()){ mr.innerHTML = ""; return; }
+      mr.innerHTML = rs.length
+        ? rs.map((r,i) => `<button data-i="${i}"><span class="r-kind">${r.kind}</span><span class="r-title">${r.title}${r.sub?` — ${r.sub}`:""}</span></button>`).join("")
+        : `<div class="search-empty">No results for “${mi.value}”.</div>`;
+      mr.querySelectorAll("button").forEach(btn => btn.addEventListener("click", () => {
+        const r = rs[+btn.dataset.i]; mi.value = ""; mr.innerHTML = ""; mi.blur();
+        fb.goToId(r.pageId, { animate: true, after: { room: r.room, speaker: r.speaker } });
+      }));
+    });
+    document.addEventListener("click", e => { if(!ms.contains(e.target)) mr.innerHTML = ""; });
+  }
+
   /* ---------- zoom overlay ---------- */
   const zo = $("#zoom-overlay"), zinner = zo.querySelector(".zoom-view__inner");
   let zscale = 1, zx = 0, zy = 0;

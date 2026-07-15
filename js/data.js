@@ -5,7 +5,7 @@ const BOOK_DATA = {
     "congress": "APCN 2027",
     "fullName": "18th Asian Pacific Congress of Nephrology",
     "theme": "Kidney Health for All — Bridging Science, Innovation & Community",
-    "dates": "18–21 March 2027",
+    "dates": "9–11 December 2027",
     "city": "Nusa Dua, Bali, Indonesia",
     "venue": "Bali International Convention Centre (BICC)",
     "host": "Indonesian Society of Nephrology (PERNEFRI)",
@@ -77,7 +77,7 @@ const BOOK_DATA = {
       "lead": "The Asian Pacific Congress of Nephrology is the flagship biennial meeting of the Asian Pacific Society of Nephrology, bringing together more than 4,000 delegates from over 40 countries.",
       "facts": [
         { "k": "Theme", "v": "Kidney Health for All — Bridging Science, Innovation & Community" },
-        { "k": "Dates", "v": "18–21 March 2027" },
+        { "k": "Dates", "v": "9–11 December 2027" },
         { "k": "Venue", "v": "Bali International Convention Centre (BICC), Nusa Dua" },
         { "k": "Host", "v": "Indonesian Society of Nephrology (PERNEFRI)" },
         { "k": "Delegates", "v": "4,000+ expected from 40+ countries" },
@@ -166,7 +166,7 @@ const BOOK_DATA = {
       "type": "day",
       "id": "day-1",
       "img": "assets/images/foto-28.jpg",
-      "eyebrow": "Wednesday, 18 March 2027",
+      "eyebrow": "Wednesday, 8 December 2027",
       "title": "Day 1 Programme",
       "sessions": [
         { "time": "08:00", "kind": "reg", "titleText": "Registration & Welcome Coffee", "room": "exhibition" },
@@ -183,7 +183,7 @@ const BOOK_DATA = {
     {
       "type": "day",
       "id": "day-2",
-      "eyebrow": "Thursday, 19 March 2027",
+      "eyebrow": "Thursday, 9 December 2027",
       "title": "Day 2 Programme",
       "sessions": [
         { "time": "08:00", "kind": "expert", "titleText": "Meet-the-Expert — Difficult Hypertension", "room": "jepun", "speaker": "s-kwan" },
@@ -199,7 +199,7 @@ const BOOK_DATA = {
     {
       "type": "day",
       "id": "day-3",
-      "eyebrow": "Friday, 20 March 2027",
+      "eyebrow": "Friday, 10 December 2027",
       "title": "Day 3 Programme",
       "sessions": [
         { "time": "08:00", "kind": "expert", "titleText": "Meet-the-Expert — Managing PD Peritonitis", "room": "jepun", "speaker": "s-nakamura" },
@@ -215,7 +215,7 @@ const BOOK_DATA = {
     {
       "type": "day",
       "id": "day-4",
-      "eyebrow": "Saturday, 21 March 2027",
+      "eyebrow": "Saturday, 11 December 2027",
       "title": "Day 4 Programme",
       "sessions": [
         { "time": "08:00", "kind": "expert", "titleText": "Meet-the-Expert — Onconephrology", "room": "jepun", "speaker": "s-lee" },
@@ -360,9 +360,9 @@ const BOOK_DATA = {
       "title": "Industry Symposium Schedule",
       "lead": "Industry symposia are non-CME sessions hosted by our partners. Lunch is provided to registered delegates.",
       "items": [
-        { "day": "Thu 19 Mar", "time": "12:30–13:45", "room": "nusantara", "host": "Renamed Therapeutics", "titleText": "Rethinking IgA Nephropathy: From Trials to Practice" },
-        { "day": "Fri 20 Mar", "time": "12:30–13:45", "room": "frangipani-1", "host": "Dialyx Renal Systems", "titleText": "Connected Dialysis: Outcomes that Matter" },
-        { "day": "Sat 21 Mar", "time": "12:30–13:45", "room": "frangipani-2", "host": "VitaCare Nutrition", "titleText": "Nutrition as Therapy in Advanced CKD" }
+        { "day": "Thu 9 Dec", "time": "12:30–13:45", "room": "nusantara", "host": "Renamed Therapeutics", "titleText": "Rethinking IgA Nephropathy: From Trials to Practice" },
+        { "day": "Fri 10 Dec", "time": "12:30–13:45", "room": "frangipani-1", "host": "Dialyx Renal Systems", "titleText": "Connected Dialysis: Outcomes that Matter" },
+        { "day": "Sat 11 Dec", "time": "12:30–13:45", "room": "frangipani-2", "host": "VitaCare Nutrition", "titleText": "Nutrition as Therapy in Advanced CKD" }
       ]
     },
     {
@@ -371,9 +371,9 @@ const BOOK_DATA = {
       "eyebrow": "Beyond the science",
       "title": "Social Events",
       "events": [
-        { "name": "Welcome Reception", "img": "assets/images/foto-24.jpg", "when": "Wed 18 Mar · 19:00", "where": "Ocean-View Lawn, BICC", "dress": "Smart casual", "desc": "Open your congress with cocktails, Balinese gamelan and a sunset over the Indian Ocean." },
-        { "name": "Gala Dinner & Awards", "img": "assets/images/foto-32.jpg", "when": "Fri 20 Mar · 19:30", "where": "Nusantara Hall", "dress": "Formal · traditional dress welcome", "desc": "Celebrate the year's achievements over a gala banquet, live music and the APCN 2027 awards ceremony." },
-        { "name": "Cultural Night", "img": "assets/images/foto-44.jpg", "when": "Thu 19 Mar · 20:00", "where": "Exhibition Hall", "dress": "Batik & traditional dress", "desc": "An evening celebrating the arts and culture of the Indonesian archipelago, with traditional dance, music and cuisine." }
+        { "name": "Welcome Reception", "img": "assets/images/foto-24.jpg", "when": "Wed 8 Dec · 19:00", "where": "Ocean-View Lawn, BICC", "dress": "Smart casual", "desc": "Open your congress with cocktails, Balinese gamelan and a sunset over the Indian Ocean." },
+        { "name": "Gala Dinner & Awards", "img": "assets/images/foto-32.jpg", "when": "Fri 10 Dec · 19:30", "where": "Nusantara Hall", "dress": "Formal · traditional dress welcome", "desc": "Celebrate the year's achievements over a gala banquet, live music and the APCN 2027 awards ceremony." },
+        { "name": "Cultural Night", "img": "assets/images/foto-44.jpg", "when": "Thu 9 Dec · 20:00", "where": "Exhibition Hall", "dress": "Batik & traditional dress", "desc": "An evening celebrating the arts and culture of the Indonesian archipelago, with traditional dance, music and cuisine." }
       ]
     },
     {

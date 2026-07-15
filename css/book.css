@@ -54,16 +54,10 @@ a { color: inherit; }
 /* ---- brandmark --------------------------------------------------- */
 /* corner logo mark */
 .brandmark {
-  position: fixed; top: 18px; right: 22px; z-index: 60;
-  display: flex; flex-direction: column; align-items: center; gap: 2px;
-  pointer-events: none; opacity: .9;
+  position: fixed; top: 14px; right: 22px; z-index: 60;
+  pointer-events: none; opacity: .95;
 }
-.brandmark img { width: 30px; }
-.brandmark span {
-  font-family: var(--serif); font-size: 12px; letter-spacing: .18em;
-  color: var(--navy); text-transform: uppercase;
-}
-.brandmark small { font-size: 8px; letter-spacing: .34em; color: var(--gold); }
+.brandmark img { width: 112px; height: auto; display: block; }
 
 /* ---- book-wrap --------------------------------------------------- */
 .book-wrap { flex: 1; min-height: 0; width: 100%; display: flex; align-items: center; justify-content: center; }
@@ -205,14 +199,23 @@ a { color: inherit; }
   background: linear-gradient(90deg, rgba(6,15,30,.35), transparent 40%); }
 
 @media (max-width: 767px) {
-  .book { width: min(99vw, calc((100dvh - 170px) * var(--ar)));
+  .book { width: min(94vw, calc((100dvh - 310px) * var(--ar)));
           aspect-ratio: var(--ar) / 1; perspective: none;
           filter: drop-shadow(0 8px 20px rgba(6,15,30,.2)); }
   .book__pages { display: none; }
   .book__gutter-shadow { display: none; }
-  .brandmark { top: 10px; right: 12px; }
+  /* logo centred at the top */
+  .brandmark { top: 10px; right: auto; left: 50%; transform: translateX(-50%); }
+  .brandmark img { width: 130px; }
 }
-@media (min-width: 768px) { .mtrack { display: none; } }
+@media (min-width: 768px) {
+  .mtrack { display: none; }
+  /* a touch more breathing room inside each slide */
+  .page__body { padding: calc(var(--gutter) + 4px) calc(var(--gutter) + 10px); }
+  /* cover starts centred (right-half page shifted to screen centre); JS slides
+     this back to 0 when opening to a full spread, and to +25% on the last page */
+  .book { transform: translateX(-25%); transition: transform .6s var(--ease-page); }
+}
 
 /* ---- accessibility / motion ------------------------------------- */
 :focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
