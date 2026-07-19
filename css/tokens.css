@@ -1,48 +1,82 @@
 /* ============================================================
-   APCN 2027 e-Pocket Book — design tokens
-   Palette: deep navy ground · warm paper · restrained gold accent.
-   Chosen for a medical congress: authoritative, calm, premium.
-   Gold is used ONLY as a jewel accent (rules, active states, numerals),
-   never as a fill, so it never reads cheap.
+   APCN design tokens — single source of truth.
+   Derived from the APCN Design Guidelines: warm amber/orange on
+   off-white, one type family, borders + tint instead of shadows.
+   Never hardcode hex in component CSS — extend this file first.
    ============================================================ */
 :root {
-  /* colour */
-  --navy:      #0A1E3F;
-  --navy-2:    #12294c;
-  --navy-3:    #16375E;
-  --navy-ink:  #05132a;
-  --paper:     #F6F7F9;
-  --paper-2:   #eef1f5;
-  --white:     #FFFFFF;
-  --gold:      #C6A253;
-  --gold-lt:   #E4CE94;
-  --ink:       #33465C;
-  --ink-soft:  #5A6B7B;
-  --line:      #dbe1ea;
-  --line-gold: rgba(198,162,83,.35);
+  /* brand */
+  --brand-amber:          #f7931e;   /* fills only — never text on white, never under white text */
+  --brand-orange:         #f15a24;   /* secondary fill, emphasis, large text ok */
+  --brand-orange-lt:      #ff8f4d;   /* brand text on dark surfaces, hover on dark */
+  --brand-orange-lighter: #ffb877;   /* decorative, chart series */
+  --brand-rust:           #c1440e;   /* the text-safe brand colour on white (5.12 AA) */
+  --brand-tint:           #fdece0;   /* subtle brand backgrounds, selected rows, badges */
 
-  /* type */
-  --serif: "Cormorant Garamond", "Iowan Old Style", Georgia, "Times New Roman", serif;
-  --sans:  "Inter", "Helvetica Neue", -apple-system, BlinkMacSystemFont, Arial, sans-serif;
-  --mono:  "IBM Plex Mono", "SFMono-Regular", ui-monospace, "Courier New", monospace;
+  /* ink & neutrals */
+  --ink:        #1f1f1f;             /* body text */
+  --ink-deep:   #0c0e28;             /* deepest text, dark surfaces */
+  --ink-navy:   #1a1d50;             /* headings, nav */
+  --ink-strong: #171717;             /* emphasis */
+  --muted:      #8a8580;             /* secondary text, labels — never body */
+  --muted-lt:   #b8b3ab;             /* placeholders, disabled */
+  --border:     #ded9d2;             /* all borders, dividers, table rules */
+  --surface:    #ffffff;             /* cards, tables, inputs */
+  --canvas:     #f8f6f4;             /* page background */
+  --canvas-alt: #f5f3f1;             /* alternate / striped rows, table headers */
 
-  /* scale */
-  --fs-display: clamp(30px, 3.4vw, 52px);
-  --fs-h1:      clamp(24px, 2.4vw, 36px);
-  --fs-h2:      clamp(18px, 1.5vw, 22px);
-  --fs-body:    clamp(13px, 1.05vw, 15.5px);
+  /* semantic */
+  --success:      #3f9a78;
+  --success-tint: #e4f3ec;
+  --danger:       #e74444;
+  --danger-alt:   #e94f4f;
+  --warning:      var(--brand-amber);
+  --warning-tint: var(--brand-tint);
+  --info:         #4b51b0;
+
+  /* type — Plus Jakarta Sans only, weights 500/600/700/800 */
+  --sans: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --fs-display: clamp(24px, 2.6vw, 32px);   /* 800, tracking -0.02em */
+  --fs-h1:      clamp(20px, 2vw, 26px);     /* 800 */
+  --fs-h2:      clamp(16px, 1.4vw, 20px);   /* 700 */
+  --fs-body:    clamp(13px, 1.05vw, 15px);  /* 500, lh 1.5 */
   --fs-small:   clamp(11px, 0.9vw, 12.5px);
-  --fs-eyebrow: clamp(10px, 0.85vw, 12px);
+  --fs-eyebrow: clamp(10px, 0.85vw, 12px);  /* 700, uppercase, +0.06em */
 
-  /* rhythm */
-  --gutter: clamp(20px, 3vw, 46px);
-  --radius: 6px;
+  /* shape — pills for controls, soft cards, no elevation */
+  --r-card:  16px;
+  --r-input: 12px;
+  --r-modal: 20px;
+  --r-pill:  9999px;
 
-  /* motion */
-  --turn: 780ms;
+  /* rhythm (4/8/12/16/24/32/48 scale) */
+  --gutter: clamp(20px, 3vw, 40px);
+  --radius: var(--r-card);
+
+  /* motion — functional only */
+  --turn: 700ms;
   --ease-page: cubic-bezier(.22, .61, .28, 1);
   --ease-soft: cubic-bezier(.4, 0, .2, 1);
 
-  /* shadow */
-  --shadow-book: 0 30px 80px -30px rgba(6,15,30,.55), 0 6px 20px -8px rgba(6,15,30,.35);
+  /* the book object's cast shadow — physical depth, same spirit as the
+     modal exception; components themselves never carry shadows */
+  --shadow-book: 0 24px 60px -28px rgba(12,14,40,.35), 0 4px 16px -8px rgba(12,14,40,.18);
+
+  /* ---- legacy aliases (old navy/gold names → new tokens) ----------
+     kept so chrome CSS stays coherent; new CSS should use the
+     canonical names above */
+  --navy:      var(--ink-deep);
+  --navy-2:    #15173a;
+  --navy-3:    var(--ink-navy);
+  --navy-ink:  #080a1e;
+  --paper:     var(--canvas);
+  --paper-2:   var(--canvas-alt);
+  --white:     var(--surface);
+  --gold:      var(--brand-amber);
+  --gold-lt:   var(--brand-orange-lt);
+  --ink-soft:  var(--muted);
+  --line:      var(--border);
+  --line-gold: rgba(247, 147, 30, .35);
+  --serif:     var(--sans);
+  --mono:      var(--sans);
 }

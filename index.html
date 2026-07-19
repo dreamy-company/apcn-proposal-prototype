@@ -6,6 +6,8 @@
 <meta name="description" content="APCN 2027 — 18th Asian Pacific Congress of Nephrology, Nusa Dua, Bali · 9–11 December 2027 · e-Pocket Book">
 <title>APCN 2027 — e-Pocket Book</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap">
 <link rel="stylesheet" href="css/tokens.css">
 <link rel="stylesheet" href="css/book.css">
 <link rel="stylesheet" href="css/pages.css">
@@ -29,11 +31,7 @@
   </div>
 
   <div class="book-wrap">
-    <div class="book" id="book">
-      <div class="book__pages"></div>
-      <div class="book__gutter-shadow"></div>
-      <div class="mtrack"></div>
-    </div>
+    <div class="book" id="book"></div>
   </div>
 
   <div class="mnav" aria-label="Page navigation"></div>
@@ -66,6 +64,7 @@
 
   <div id="live" aria-live="polite" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)"></div>
 
+  <script src="js/vendor/page-flip.browser.js"></script>
   <script src="js/data.js"></script>
   <script src="js/render.js"></script>
   <script src="js/flipbook.js"></script>

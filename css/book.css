@@ -4,6 +4,7 @@ html, body { height: 100%; }
 body {
   margin: 0;
   font-family: var(--sans);
+  font-weight: 500;
   color: var(--ink);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
@@ -17,26 +18,22 @@ a { color: inherit; }
 /* self-hosted webfonts would sit here; we fall back gracefully to the
    platform serif/sans stacks above so the book works fully offline. */
 
-/* ---- the elegant patterned surround --------------------------------
-   Layer 1: soft marble wash.  Layer 2: faint navy ornament tile.
-   The book floats above; the surround is quiet so the book is the hero. */
+/* ---- the quiet warm surround ---------------------------------------
+   Flat canvas with a faint ornament tile in border tones; the book is
+   the hero, depth comes from its cast shadow only. */
 .stage {
-  background-color: var(--paper-2);
-  background-image:
-    url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CjxnIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzBBMUUzRiIgc3Ryb2tlLW9wYWNpdHk9IjAuMDUiIHN0cm9rZS13aWR0aD0iMS40Ij4KICA8cGF0aCBkPSJNNjAuMCA4CiAgICAgICAgICAgQyA4Ni4zOTk5OTk5OTk5OTk5OSA4IDExMiAzMy42IDExMiA2MC4wCiAgICAgICAgICAgQyAxMTIgODYuMzk5OTk5OTk5OTk5OTkgODYuMzk5OTk5OTk5OTk5OTkgMTEyIDYwLjAgMTEyCiAgICAgICAgICAgQyAzMy42IDExMiA4IDg2LjM5OTk5OTk5OTk5OTk5IDggNjAuMAogICAgICAgICAgIEMgOCAzMy42IDMzLjYgOCA2MC4wIDggWiIvPgogIDxwYXRoIGQ9Ik02MC4wIDMwCiAgICAgICAgICAgQyA3NC40IDMwIDkwIDQ1LjYgOTAgNjAuMAogICAgICAgICAgIEMgOTAgNzQuNCA3NC40IDkwIDYwLjAgOTAKICAgICAgICAgICBDIDQ1LjYgOTAgMzAgNzQuNCAzMCA2MC4wCiAgICAgICAgICAgQyAzMCA0NS42IDQ1LjYgMzAgNjAuMCAzMCBaIi8+CiAgPGNpcmNsZSBjeD0iNjAuMCIgY3k9IjYwLjAiIHI9IjQiIGZpbGw9IiMwQTFFM0YiIGZpbGwtb3BhY2l0eT0iMC4wNSIgc3Ryb2tlPSJub25lIi8+CiAgPHBhdGggZD0iTTAgMCBDIDMzLjYgOCA4IDMzLjYgMCA2MC4wIi8+CiAgPHBhdGggZD0iTTEyMCAwIEMgODYuMzk5OTk5OTk5OTk5OTkgOCAxMTIgMzMuNiAxMjAgNjAuMCIvPgogIDxwYXRoIGQ9Ik0wIDEyMCBDIDMzLjYgMTEyIDggODYuMzk5OTk5OTk5OTk5OTkgMCA2MC4wIi8+CiAgPHBhdGggZD0iTTEyMCAxMjAgQyA4Ni4zOTk5OTk5OTk5OTk5OSAxMTIgMTEyIDg2LjM5OTk5OTk5OTk5OTk5IDEyMCA2MC4wIi8+CjwvZz4KPGcgZmlsbD0iIzBBMUUzRiIgZmlsbC1vcGFjaXR5PSIwLjA1Ij4KICA8Y2lyY2xlIGN4PSIwIiBjeT0iMCIgcj0iMi4yIi8+PGNpcmNsZSBjeD0iMTIwIiBjeT0iMCIgcj0iMi4yIi8+CiAgPGNpcmNsZSBjeD0iMCIgY3k9IjEyMCIgcj0iMi4yIi8+PGNpcmNsZSBjeD0iMTIwIiBjeT0iMTIwIiByPSIyLjIiLz4KPC9nPgo8L3N2Zz4="),
-    url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4MDAiIGhlaWdodD0iODAwIiB2aWV3Qm94PSIwIDAgODAwIDgwMCI+CjxkZWZzPgogIDxsaW5lYXJHcmFkaWVudCBpZD0ibWciIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj4KICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2VlZjFmNSIvPjxzdG9wIG9mZnNldD0iMC41IiBzdG9wLWNvbG9yPSIjZTZlYWYwIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNkZGUzZWMiLz4KICA8L2xpbmVhckdyYWRpZW50Pgo8L2RlZnM+CjxyZWN0IHdpZHRoPSI4MDAiIGhlaWdodD0iODAwIiBmaWxsPSJ1cmwoI21nKSIvPgo8ZyBzdHJva2U9IiNjN2NmZGIiIHN0cm9rZS1vcGFjaXR5PSIwLjUiIGZpbGw9Im5vbmUiIHN0cm9rZS13aWR0aD0iMSI+CiAgPHBhdGggZD0iTS0yMCAxMjAgQyAxODAgOTAgMzAwIDIwMCA1MjAgMTYwIEMgNjQwIDEzOCA3MjAgMjAwIDg0MCAxODAiLz4KICA8cGF0aCBkPSJNLTIwIDM2MCBDIDE2MCAzNDAgMjYwIDQzMCA0NzAgNDAwIEMgNjQwIDM3NSA3MDAgNDQwIDg0MCA0MjAiLz4KICA8cGF0aCBkPSJNLTIwIDYyMCBDIDIwMCA2MDAgMzIwIDY5MCA1NDAgNjUwIEMgNjYwIDYyOCA3NDAgNjkwIDg0MCA2NjgiLz4KICA8cGF0aCBkPSJNMTIwIC0yMCBDIDEwMCAyMDAgMjEwIDMyMCAxODAgNTQwIEMgMTYwIDY2MCAyMjAgNzQwIDIwMCA4NDAiLz4KICA8cGF0aCBkPSJNNTYwIC0yMCBDIDU0MCAxODAgNjMwIDMwMCA2MDAgNTIwIEMgNTgwIDY0MCA2NDAgNzQwIDYyMCA4NDAiLz4KPC9nPgo8ZyBzdHJva2U9IiNiOWMzZDMiIHN0cm9rZS1vcGFjaXR5PSIwLjM1IiBmaWxsPSJub25lIiBzdHJva2Utd2lkdGg9IjAuNiI+CiAgPHBhdGggZD0iTS0yMCAyNDAgQyAyMDAgMjEwIDM0MCAzMDAgNTYwIDI3MCBDIDcwMCAyNTAgNzYwIDMwMCA4NDAgMjg1Ii8+CiAgPHBhdGggZD0iTS0yMCA1MDAgQyAxODAgNDgwIDMwMCA1NjAgNTIwIDUzMCBDIDY2MCA1MTIgNzQwIDU2MCA4NDAgNTQ1Ii8+CjwvZz4KPC9zdmc+");
-  background-repeat: repeat, no-repeat;
-  background-size: 120px 120px, cover;
-  background-position: center, center;
+  background-color: var(--canvas);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cg fill='none' stroke='%23ded9d2' stroke-opacity='0.5' stroke-width='1.2'%3E%3Ccircle cx='60' cy='60' r='52'/%3E%3Ccircle cx='60' cy='60' r='30'/%3E%3Cpath d='M0 0C33.6 8 8 33.6 0 60M120 0C86.4 8 112 33.6 120 60M0 120C33.6 112 8 86.4 0 60M120 120C86.4 112 112 86.4 120 60'/%3E%3C/g%3E%3Cg fill='%23ded9d2'%3E%3Ccircle cx='0' cy='0' r='2'/%3E%3Ccircle cx='120' cy='0' r='2'/%3E%3Ccircle cx='0' cy='120' r='2'/%3E%3Ccircle cx='120' cy='120' r='2'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 120px 120px;
 }
 
-/* Navy pages carry a gold ornament ground; paper pages a faint navy one. */
-.pat-navy  { background-color: var(--navy);
-             background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CjxnIGZpbGw9Im5vbmUiIHN0cm9rZT0iI0M2QTI1MyIgc3Ryb2tlLW9wYWNpdHk9IjAuMSIgc3Ryb2tlLXdpZHRoPSIxLjQiPgogIDxwYXRoIGQ9Ik02MC4wIDgKICAgICAgICAgICBDIDg2LjM5OTk5OTk5OTk5OTk5IDggMTEyIDMzLjYgMTEyIDYwLjAKICAgICAgICAgICBDIDExMiA4Ni4zOTk5OTk5OTk5OTk5OSA4Ni4zOTk5OTk5OTk5OTk5OSAxMTIgNjAuMCAxMTIKICAgICAgICAgICBDIDMzLjYgMTEyIDggODYuMzk5OTk5OTk5OTk5OTkgOCA2MC4wCiAgICAgICAgICAgQyA4IDMzLjYgMzMuNiA4IDYwLjAgOCBaIi8+CiAgPHBhdGggZD0iTTYwLjAgMzAKICAgICAgICAgICBDIDc0LjQgMzAgOTAgNDUuNiA5MCA2MC4wCiAgICAgICAgICAgQyA5MCA3NC40IDc0LjQgOTAgNjAuMCA5MAogICAgICAgICAgIEMgNDUuNiA5MCAzMCA3NC40IDMwIDYwLjAKICAgICAgICAgICBDIDMwIDQ1LjYgNDUuNiAzMCA2MC4wIDMwIFoiLz4KICA8Y2lyY2xlIGN4PSI2MC4wIiBjeT0iNjAuMCIgcj0iNCIgZmlsbD0iI0M2QTI1MyIgZmlsbC1vcGFjaXR5PSIwLjEiIHN0cm9rZT0ibm9uZSIvPgogIDxwYXRoIGQ9Ik0wIDAgQyAzMy42IDggOCAzMy42IDAgNjAuMCIvPgogIDxwYXRoIGQ9Ik0xMjAgMCBDIDg2LjM5OTk5OTk5OTk5OTk5IDggMTEyIDMzLjYgMTIwIDYwLjAiLz4KICA8cGF0aCBkPSJNMCAxMjAgQyAzMy42IDExMiA4IDg2LjM5OTk5OTk5OTk5OTk5IDAgNjAuMCIvPgogIDxwYXRoIGQ9Ik0xMjAgMTIwIEMgODYuMzk5OTk5OTk5OTk5OTkgMTEyIDExMiA4Ni4zOTk5OTk5OTk5OTk5OSAxMjAgNjAuMCIvPgo8L2c+CjxnIGZpbGw9IiNDNkEyNTMiIGZpbGwtb3BhY2l0eT0iMC4xIj4KICA8Y2lyY2xlIGN4PSIwIiBjeT0iMCIgcj0iMi4yIi8+PGNpcmNsZSBjeD0iMTIwIiBjeT0iMCIgcj0iMi4yIi8+CiAgPGNpcmNsZSBjeD0iMCIgY3k9IjEyMCIgcj0iMi4yIi8+PGNpcmNsZSBjeD0iMTIwIiBjeT0iMTIwIiByPSIyLjIiLz4KPC9nPgo8L3N2Zz4=");
-             background-size: 120px 120px; }
-.pat-paper { background-color: var(--paper);
-             background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI5NiIgaGVpZ2h0PSI5NiIgdmlld0JveD0iMCAwIDk2IDk2Ij4KPGcgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjOGFhMGJkIiBzdHJva2Utb3BhY2l0eT0iMC4xNiIgc3Ryb2tlLXdpZHRoPSIxLjQiPgogIDxwYXRoIGQ9Ik00OC4wIDgKICAgICAgICAgICBDIDY5LjEyIDggODggMjYuODgwMDAwMDAwMDAwMDAzIDg4IDQ4LjAKICAgICAgICAgICBDIDg4IDY5LjEyIDY5LjEyIDg4IDQ4LjAgODgKICAgICAgICAgICBDIDI2Ljg4MDAwMDAwMDAwMDAwMyA4OCA4IDY5LjEyIDggNDguMAogICAgICAgICAgIEMgOCAyNi44ODAwMDAwMDAwMDAwMDMgMjYuODgwMDAwMDAwMDAwMDAzIDggNDguMCA4IFoiLz4KICA8cGF0aCBkPSJNNDguMCAzMAogICAgICAgICAgIEMgNTkuNTE5OTk5OTk5OTk5OTk2IDMwIDY2IDM2LjQ4MDAwMDAwMDAwMDAwNCA2NiA0OC4wCiAgICAgICAgICAgQyA2NiA1OS41MTk5OTk5OTk5OTk5OTYgNTkuNTE5OTk5OTk5OTk5OTk2IDY2IDQ4LjAgNjYKICAgICAgICAgICBDIDM2LjQ4MDAwMDAwMDAwMDAwNCA2NiAzMCA1OS41MTk5OTk5OTk5OTk5OTYgMzAgNDguMAogICAgICAgICAgIEMgMzAgMzYuNDgwMDAwMDAwMDAwMDA0IDM2LjQ4MDAwMDAwMDAwMDAwNCAzMCA0OC4wIDMwIFoiLz4KICA8Y2lyY2xlIGN4PSI0OC4wIiBjeT0iNDguMCIgcj0iNCIgZmlsbD0iIzhhYTBiZCIgZmlsbC1vcGFjaXR5PSIwLjE2IiBzdHJva2U9Im5vbmUiLz4KICA8cGF0aCBkPSJNMCAwIEMgMjYuODgwMDAwMDAwMDAwMDAzIDggOCAyNi44ODAwMDAwMDAwMDAwMDMgMCA0OC4wIi8+CiAgPHBhdGggZD0iTTk2IDAgQyA2OS4xMiA4IDg4IDI2Ljg4MDAwMDAwMDAwMDAwMyA5NiA0OC4wIi8+CiAgPHBhdGggZD0iTTAgOTYgQyAyNi44ODAwMDAwMDAwMDAwMDMgODggOCA2OS4xMiAwIDQ4LjAiLz4KICA8cGF0aCBkPSJNOTYgOTYgQyA2OS4xMiA4OCA4OCA2OS4xMiA5NiA0OC4wIi8+CjwvZz4KPGcgZmlsbD0iIzhhYTBiZCIgZmlsbC1vcGFjaXR5PSIwLjE2Ij4KICA8Y2lyY2xlIGN4PSIwIiBjeT0iMCIgcj0iMi4yIi8+PGNpcmNsZSBjeD0iOTYiIGN5PSIwIiByPSIyLjIiLz4KICA8Y2lyY2xlIGN4PSIwIiBjeT0iOTYiIHI9IjIuMiIvPjxjaXJjbGUgY3g9Ijk2IiBjeT0iOTYiIHI9IjIuMiIvPgo8L2c+Cjwvc3ZnPg==");
-             background-size: 96px 96px; }
+/* page grounds: dark brand pages frame the light content pages */
+.pat-dark {
+  background-color: var(--ink-deep);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cg fill='none' stroke='%23ff8f4d' stroke-opacity='0.07' stroke-width='1.4'%3E%3Ccircle cx='60' cy='60' r='52'/%3E%3Ccircle cx='60' cy='60' r='30'/%3E%3Cpath d='M0 0C33.6 8 8 33.6 0 60M120 0C86.4 8 112 33.6 120 60M0 120C33.6 112 8 86.4 0 60M120 120C86.4 112 112 86.4 120 60'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 120px 120px;
+}
+.pat-light { background-color: var(--surface); }
 
 /* ============================================================
    Book chrome + flip engine
@@ -62,61 +59,32 @@ a { color: inherit; }
 /* ---- book-wrap --------------------------------------------------- */
 .book-wrap { flex: 1; min-height: 0; width: 100%; display: flex; align-items: center; justify-content: center; }
 
-/* ---- book chrome ------------------------------------------------- */
+/* ---- book chrome -------------------------------------------------
+   StPageFlip renders inside .book (.stf__wrapper/.stf__block/.stf__item);
+   height comes from the library's autoSize, so .book only caps width.
+   No perspective here — the library's .stf__block supplies its own, and a
+   nested parent perspective would distort the curl. */
 .book {
   position: relative;
-  perspective: 2600px;
-  width: min(98vw, calc((100dvh - 120px) * var(--ar) * 2));
+  width: min(98vw, calc((100dvh - 180px) * var(--ar) * 2));
   cursor: grab;
-  aspect-ratio: calc(var(--ar) * 2) / 1;   /* two pages wide */
-  --ar: 0.72;                              /* single page w:h */
-  filter: drop-shadow(0 30px 60px rgba(6,15,30,.45));
+  --ar: 1.333;                             /* single page w:h — landscape (4:3) */
+  filter: drop-shadow(0 24px 48px rgba(12,14,40,.30));
+}
+/* ease the half-page centring slide (cover / back cover) with the turn */
+@media (prefers-reduced-motion: no-preference) {
+  .book { transition: transform .65s cubic-bezier(.22,.61,.36,1); }
 }
 .book:active { cursor: grabbing; }
-.book__pages { position: absolute; inset: 0; transform-style: preserve-3d; }
 
-/* ---- gutter-shadow ----------------------------------------------- */
-/* the cast shadow that pools under a lifting page */
-.book__gutter-shadow {
-  position: absolute; top: 0; bottom: 0; left: 50%; width: 40px;
-  transform: translateX(-50%);
-  background: linear-gradient(90deg, transparent, rgba(6,15,30,.28), transparent);
-  opacity: .0; pointer-events: none; z-index: 999; transition: opacity .2s;
-}
-
-/* ---- paper / leaf 3D flip --------------------------------------- */
-.paper {
-  position: absolute; top: 0; left: 50%; width: 50%; height: 100%;
-  transform-origin: left center;
-  transform-style: preserve-3d;
-  will-change: transform;
-}
-.paper__face {
-  position: absolute; inset: 0;
-  backface-visibility: hidden; -webkit-backface-visibility: hidden;
-  overflow: hidden;
-  box-shadow: inset 0 0 40px rgba(6,15,30,.06);
-}
-.paper__face--front { transform: rotateY(0deg); }
-.paper__face--back  { transform: rotateY(180deg); }
-/* soft spine gradient on the inner edge of each face */
-.paper__face--front::after,
-.paper__face--back::after {
-  content: ""; position: absolute; top: 0; bottom: 0; width: 34px; left: 0;
-  background: linear-gradient(90deg, rgba(6,15,30,.16), transparent);
+/* soft spine gradient on the inner edge of each page of the open spread */
+.stf__item.--left .page::after,
+.stf__item.--right .page::after {
+  content: ""; position: absolute; top: 0; bottom: 0; width: 34px;
   pointer-events: none;
 }
-/* turn shading overlays, opacity driven by JS each frame */
-.turn-shadow {
-  position: absolute; inset: 0; pointer-events: none; opacity: 0;
-  background: linear-gradient(90deg, rgba(6,15,30,.55), rgba(6,15,30,.05));
-}
-.paper__face--back .turn-shadow {
-  background: linear-gradient(270deg, rgba(255,255,255,.10), transparent);
-}
-
-/* empty (back of cover / after last page) */
-.paper__face.is-empty { background: var(--paper-2); }
+.stf__item.--right .page::after { left: 0;  background: linear-gradient(90deg,  rgba(12,14,40,.12), transparent); }
+.stf__item.--left  .page::after { right: 0; background: linear-gradient(270deg, rgba(12,14,40,.12), transparent); }
 
 /* ---- page content ------------------------------------------------ */
 .page {
@@ -135,90 +103,66 @@ a { color: inherit; }
   bottom: 0;
   display: block;
   height: 36px;
-  background: linear-gradient(transparent, rgba(6,15,30,.10));
+  background: linear-gradient(transparent, rgba(12,14,40,.08));
   pointer-events: none;
   margin-top: -36px;
 }
-.pat-navy .page__body.has-more::after {
+.pat-dark .page__body.has-more::after {
   background: linear-gradient(transparent, rgba(0,0,0,.32));
 }
-.page.pat-navy  { color: var(--paper); }
-.page.pat-paper { color: var(--ink); }
+.page.pat-dark  { color: var(--canvas-alt); }
+.page.pat-light { color: var(--ink); }
 
 .page__pageno {
-  position: absolute; bottom: 8px; font-size: 10px; letter-spacing: .1em;
-  color: var(--ink-soft); opacity: .7;
+  position: absolute; bottom: 8px; font-size: 10px; font-weight: 600; letter-spacing: .1em;
+  font-variant-numeric: tabular-nums; color: var(--muted); opacity: .8;
 }
-.paper__face--front .page__pageno { right: 16px; }
-.paper__face--back  .page__pageno { left: 16px; }
-.pat-navy .page__pageno { color: var(--gold-lt); }
+.stf__item.--right .page__pageno { right: 16px; }
+.stf__item.--left  .page__pageno { left: 16px; }
+.pat-dark .page__pageno { color: var(--brand-orange-lt); }
 
 /* eyebrow / titles shared */
 .eyebrow {
-  font-family: var(--sans); font-size: var(--fs-eyebrow); letter-spacing: .26em;
-  text-transform: uppercase; color: var(--gold); margin: 0 0 10px;
+  font-family: var(--sans); font-size: var(--fs-eyebrow); font-weight: 700; letter-spacing: .06em;
+  text-transform: uppercase; color: var(--brand-rust); margin: 0 0 10px;
   display: flex; align-items: center; gap: 10px;
 }
-.eyebrow::before { content: ""; width: 22px; height: 1px; background: var(--gold); }
+.eyebrow::before { content: ""; width: 22px; height: 2px; border-radius: 2px; background: var(--brand-amber); }
+.pat-dark .eyebrow { color: var(--brand-orange-lt); }
 .page__title {
-  font-family: var(--serif); font-weight: 600; line-height: 1.02;
-  font-size: var(--fs-h1); margin: 0 0 var(--fs-h2); color: inherit;
+  font-family: var(--sans); font-weight: 800; letter-spacing: -0.02em; line-height: 1.1;
+  font-size: var(--fs-h1); margin: 0 0 var(--fs-h2); color: var(--ink-navy);
 }
-.pat-navy .page__title { color: var(--white); }
-.lead { font-size: var(--fs-body); line-height: 1.55; color: var(--ink-soft); max-width: 52ch; }
-.pat-navy .lead { color: #cdd7e6; }
+.pat-dark .page__title { color: var(--surface); }
+.pat-dark .page__title { color: var(--surface); }
+.lead { font-size: var(--fs-body); font-weight: 500; line-height: 1.55; color: var(--muted); max-width: 52ch; }
+.pat-dark .lead { color: #d8d9e6; }
 .prose p { font-size: var(--fs-body); line-height: 1.6; margin: 0 0 .8em; }
-
-/* ---- footer sponsor band ---------------------------------------- */
-.sponsor-band {
-  margin-top: auto; display: flex; align-items: center; gap: 10px;
-  padding: 8px 14px; border-top: 1px solid var(--line-gold);
-  font-size: var(--fs-small); color: var(--ink-soft);
-}
-.pat-navy .sponsor-band { color: #b9c6d8; }
-.sponsor-band b { color: var(--gold); font-weight: 600; }
-.sponsor-band.is-available { font-style: italic; opacity: .8; }
 
 /* ---- scrub ------------------------------------------------------- */
 .scrub { width: min(94vw, 720px); display: flex; align-items: center; gap: 10px; z-index: 50; padding-bottom: 8px; }
 .scrub__track { position: relative; flex: 1; height: 4px; border-radius: 4px; background: var(--line); cursor: pointer; }
-.scrub__fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 4px; background: var(--gold); }
+.scrub__fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 4px; background: var(--brand-amber); }
 .scrub__thumb {
   position: absolute; top: 50%; width: 14px; height: 14px; border-radius: 50%;
-  background: var(--navy); border: 2px solid var(--gold); transform: translate(-50%,-50%);
+  background: var(--surface); border: 2px solid var(--brand-amber); transform: translate(-50%,-50%);
 }
-.scrub__label { font-size: 11px; color: var(--ink-soft); min-width: 30px; text-align: center; font-variant-numeric: tabular-nums; }
-
-/* ---- mobile: single-page slider --------------------------------- */
-.mtrack { position: absolute; inset: 0; overflow: hidden; }
-.mtrack__row { position: absolute; inset: 0; display: flex; will-change: transform; }
-/* width is set per-slide inline by flipbook.js (100/N %); flex-basis:auto
-   lets that width win so each slide is exactly one page, not the whole row. */
-.mslide { position: relative; flex: 0 0 auto; height: 100%; overflow: hidden; }
-.mslide__shade { position: absolute; inset: 0; pointer-events: none; opacity: 0;
-  background: linear-gradient(90deg, rgba(6,15,30,.35), transparent 40%); }
+.scrub__label { font-size: 11px; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--muted); min-width: 30px; text-align: center; font-variant-numeric: tabular-nums; }
 
 @media (max-width: 767px) {
   .book { width: min(94vw, calc((100dvh - 310px) * var(--ar)));
-          aspect-ratio: var(--ar) / 1; perspective: none;
-          filter: drop-shadow(0 8px 20px rgba(6,15,30,.2)); }
-  .book__pages { display: none; }
-  .book__gutter-shadow { display: none; }
+          filter: drop-shadow(0 8px 20px rgba(12,14,40,.18)); }
   /* logo centred at the top */
   .brandmark { top: 10px; right: auto; left: 50%; transform: translateX(-50%); }
   .brandmark img { width: 130px; }
 }
 @media (min-width: 768px) {
-  .mtrack { display: none; }
-  /* a touch more breathing room inside each slide */
+  /* a touch more breathing room inside each page */
   .page__body { padding: calc(var(--gutter) + 4px) calc(var(--gutter) + 10px); }
   /* cover starts centred (right-half page shifted to screen centre); JS slides
      this back to 0 when opening to a full spread, and to +25% on the last page */
-  .book { transform: translateX(-25%); transition: transform .6s var(--ease-page); }
+  .book { transform: translateX(-25%); }
 }
 
 /* ---- accessibility / motion ------------------------------------- */
-:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
-@media (prefers-reduced-motion: reduce) {
-  .paper { transition: none !important; }
-}
+:focus-visible { outline: 2px solid var(--brand-amber); outline-offset: 2px; }

@@ -4,20 +4,14 @@ function buildIndex(book){
 
   for(const p of book.pages){
     if(p.type === "day")
-      p.sessions.forEach(s => add("Session", s.titleText, p.id, { time: `${p.title} · ${s.time}` }));
+      p.sessions.forEach(s => add("Session", s.titleText, p.id, { time: `${p.title} · ${s.time}`, sub: s.room }));
     if(p.type === "speakers")
       p.speakers.forEach(s => add("Speaker", s.name, p.id, { speaker: s.id, sub: s.affil }));
-    if(p.type === "faculty")
-      p.members.forEach(m => add("Faculty", m.name, p.id, { sub: m.country }));
-    if(p.type === "exhibition-directory")
-      p.exhibitors.forEach(e => add("Exhibitor", e.name, p.id, { sub: `Booth ${e.booth}` }));
-    if(p.type === "sponsors")
-      p.tiers.forEach(t => t.sponsors.forEach(s => add("Sponsor", s.name, s.page || p.id, { sub: t.name })));
-    if(p.type === "symposium")
-      p.items.forEach(s => add("Symposium", s.titleText, p.id, { sub: s.host }));
-    if(p.type === "venue-map")
-      Object.entries(p.rooms).forEach(([k,r]) => add("Room", r.name, p.id, { room: k, sub: r.use }));
-    if(["about","glance","info","useful","emergency","social","thankyou"].includes(p.type))
+    if(p.type === "shuttle")
+      p.routes.forEach(r => add("Shuttle", r.route, p.id, { sub: r.times }));
+    if(p.type === "hotels")
+      p.hotels.forEach(h => add("Hotel", h.name, p.id, { sub: h.distance }));
+    if(["toc","welcome-bali","exhibition-map","notice","goodtoknow","thankyou"].includes(p.type))
       add("Page", p.title, p.id);
   }
   return q => {
@@ -35,24 +29,21 @@ function initControls(book, fb){
 
   /* ---------- bottom section nav ---------- */
   const navMap = {
-    home: "cover", program: "program-glance", speakers: "speaker-directory",
-    exhibition: "exhibition-floor-plan", sponsors: "sponsor-recognition", map: "venue-map-bicc"
+    home: "cover", speakers: "speakers-1", agenda: "day-1",
+    exhibition: "exhibition-floor-plan", shuttle: "shuttle", hotels: "hotels"
   };
   const nav = $(".nav");
   nav.innerHTML = Object.entries({
-    home:"Home", program:"Program", speakers:"Speakers", exhibition:"Exhibition", sponsors:"Sponsors", map:"Map"
-  }).map(([k,label]) => `<button data-nav="${k}">${ICON[k==="home"?"home":k]||""}<span>${label}</span></button>`).join("");
+    home:"Home", speakers:"Speakers", agenda:"Agenda", exhibition:"Exhibition", shuttle:"Shuttle", hotels:"Hotels"
+  }).map(([k,label]) => `<button data-nav="${k}">${ICON[k]||""}<span>${label}</span></button>`).join("");
   nav.querySelectorAll("button").forEach(b =>
     b.addEventListener("click", () => fb.goToId(navMap[b.dataset.nav], { animate: true })));
 
   /* section membership for active state: walk pages, remember last-seen section */
   const typeToNav = {
-    cover:'home', welcome:'home', about:'home', committee:'home', thankyou:'home',
-    glance:'program', day:'program', symposium:'program', social:'program',
-    speakers:'speakers', faculty:'speakers',
-    'exhibition-map':'exhibition', 'exhibition-directory':'exhibition',
-    sponsors:'sponsors', 'sponsor-platinum':'sponsors',
-    'venue-map':'map', info:'map', emergency:'map', useful:'map'
+    cover:'home', toc:'home', 'welcome-bali':'home', notice:'home', goodtoknow:'home', thankyou:'home',
+    speakers:'speakers', day:'agenda',
+    'exhibition-map':'exhibition', shuttle:'shuttle', hotels:'hotels'
   };
   const sectionOf = {};
   for(const p of book.pages){
@@ -183,8 +174,7 @@ function initControls(book, fb){
   function zoomCurrent(){
     const active = document.querySelector(`.page[data-page-id="${fb.current()}"] [data-mapframe]`);
     if(active) return openZoom(active.innerHTML);
-    const page = document.querySelector(`.paper__face--front .page[data-page-id="${fb.current()}"]`)
-              || document.querySelector(`.page[data-page-id="${fb.current()}"]`);
+    const page = document.querySelector(`.page[data-page-id="${fb.current()}"]`);
     if(page) openZoom(`<div style="width:70vw;max-width:900px">${page.outerHTML}</div>`);
   }
   zo.addEventListener("click", e => { if(e.target === zo) zo.classList.remove("open"); });

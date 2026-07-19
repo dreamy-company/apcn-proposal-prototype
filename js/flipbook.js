@@ -1,298 +1,116 @@
-const easeInOut = t => t < .5 ? 4*t*t*t : 1 - Math.pow(-2*t+2, 3)/2;
 const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const FLIP_MS = 700;                       // keep in sync with settings.flippingTime
 
+/* Thin wrapper around StPageFlip (js/vendor/page-flip.browser.js, global St)
+   that preserves the original Flipbook public API used by controls.js:
+   next/prev/goToId/currentId/current/indexOfId/progress/goToProgress/total/
+   onChange/api()/runAfter. StPageFlip provides the soft page-curl rendering,
+   drag/touch handling and the portrait (single page) / landscape (spread)
+   orientation switch. */
 class Flipbook {
   constructor(book, root){
     this.book = book;
     this.root = root;                 // .book element
     this.pages = book.pages;
     this.N = this.pages.length;
-    this.flipped = 0;                 // desktop: number of turned leaves
-    this.mIndex = 0;                  // mobile: current single page
-    this.animating = false;
     this.onChange = () => {};
     setBook(book);
     this.prep();
     this.mount();
     window.APCN = this.api();
-    addEventListener("resize", () => this.onResize());
   }
 
   /* ---- derived indexes -------------------------------------------- */
   prep(){
     const b = this.book;
-    b._spk = {}; b._rooms = {}; b._svg = window.INLINE_SVG || {};
-    for(const p of this.pages){
+    b._spk = {};
+    for(const p of this.pages)
       if(p.type === "speakers") p.speakers.forEach(s => b._spk[s.id] = s);
-      if(p.type === "venue-map") Object.assign(b._rooms, p.rooms);
-    }
-  }
-  async prepSvg(){
-    const paths = new Set();
-    for(const p of this.pages) if(p.map) paths.add(p.map);
-    for(const path of paths){
-      if(this.book._svg[path]) continue;
-      try { this.book._svg[path] = await (await fetch(path)).text(); }
-      catch { this.book._svg[path] = `<div style="color:#C6A253;padding:20px">Map: ${path}</div>`; }
-    }
   }
 
-  get isDesktop(){ return matchMedia("(min-width: 768px)").matches; }
-
-  /* ---- build DOM for current mode --------------------------------- */
+  /* ---- build sheets + StPageFlip ----------------------------------- */
   mount(){
-    this.pagesLayer = this.root.querySelector(".book__pages");
-    this.gutter = this.root.parentElement.querySelector(".book__gutter-shadow")
-              || this.root.querySelector(".book__gutter-shadow");
-    this.mtrack = this.root.querySelector(".mtrack");
-    this.buildDesktop();
-    this.buildMobile();
-    this.bindPointer();
-    this.layout(false);
-  }
-
-  buildDesktop(){
-    this.pagesLayer.innerHTML = "";
-    this.papers = [];
-    this.Np = Math.ceil(this.N / 2);
-    for(let j = 0; j < this.Np; j++){
-      const paper = document.createElement("div");
-      paper.className = "paper"; paper.dataset.paper = j;
-      const front = document.createElement("div"); front.className = "paper__face paper__face--front";
-      const back  = document.createElement("div"); back.className  = "paper__face paper__face--back";
-      const fi = 2*j, bi = 2*j+1;
-      front.appendChild(renderPage(this.pages[fi], fi+1));
-      front.insertAdjacentHTML("beforeend", `<div class="turn-shadow"></div>`);
-      if(bi < this.N){
-        back.appendChild(renderPage(this.pages[bi], bi+1));
-      } else { back.classList.add("is-empty"); }
-      back.insertAdjacentHTML("beforeend", `<div class="turn-shadow"></div>`);
-      paper.append(front, back);
-      this.pagesLayer.appendChild(paper);
-      this.papers.push(paper);
-    }
-  }
-
-  buildMobile(){
-    if(!this.mtrack) return;
-    this.mtrack.innerHTML = `<div class="mtrack__row"></div>`;
-    this.mrow = this.mtrack.querySelector(".mtrack__row");
     for(let i = 0; i < this.N; i++){
-      const slide = document.createElement("div"); slide.className = "mslide";
-      slide.appendChild(renderPage(this.pages[i], i+1));
-      slide.insertAdjacentHTML("beforeend", `<div class="mslide__shade"></div>`);
-      this.mrow.appendChild(slide);
+      const sheet = document.createElement("div");
+      sheet.className = "sheet";
+      if(i === 0) sheet.dataset.density = "hard";   // cover flips as a rigid board
+      sheet.appendChild(renderPage(this.pages[i], i+1));
+      this.root.appendChild(sheet);
     }
-    this.mrow.style.width = `${this.N*100}%`;
-    this.mrow.querySelectorAll(".mslide").forEach(s => s.style.width = `${100/this.N}%`);
+
+    this.pf = new St.PageFlip(this.root, {
+      width: 800, height: 600,                // base page size at --ar 1.333
+      size: "stretch",
+      minWidth: 365, maxWidth: 1400,
+      minHeight: 274, maxHeight: 1050,
+      showCover: true,
+      usePortrait: true,                      // single-page curl on narrow screens
+      autoSize: true,
+      flippingTime: FLIP_MS,
+      maxShadowOpacity: 0.4,
+      mobileScrollSupport: true,              // inner .page__body keeps touch scroll
+      clickEventForward: true,
+      disableFlipByClick: true,               // page taps stay interactions; corners still flip
+      showPageCorners: true,
+      swipeDistance: 30,
+      startPage: 0,
+    });
+    this.pf.loadFromHTML(this.root.querySelectorAll(".sheet"));
+
+    this.pf.on("flip", () => { this._syncShift(); this.onChange(this.currentId()); });
+    this.pf.on("changeOrientation", () => this._syncShift());
+    this._syncShift();
+    this.bindWheel();
   }
 
-  /* On desktop the book is two pages wide. The cover is only the right half
-     and the last page only the left half, so shift the book by half a page
-     (25% of its width) to centre that single page; 0 for full spreads. */
-  centerShift(f){
-    if(!this.isDesktop) return "";
-    if(f <= 0) return "translateX(-25%)";
-    if(f >= this.Np) return "translateX(25%)";
-    return "translateX(0)";
+  /* ---- half-page centring shift ------------------------------------
+     StPageFlip always draws single pages (cover / lone back page) in one
+     half of the block; slide the book so they sit centred, animated by
+     the CSS transition on .book. */
+  _shiftFor(leftIdx){
+    if(this.pf.getOrientation() !== "landscape") return "";
+    if(leftIdx <= 0) return "translateX(-25%)";
+    if(this.N % 2 === 0 && leftIdx >= this.N-1) return "translateX(25%)";
+    return "";
   }
-
-  /* ---- resting layout --------------------------------------------- */
-  layout(animate){
-    if(this.isDesktop){
-      for(let j = 0; j < this.Np; j++){
-        const p = this.papers[j];
-        const isFlipped = j < this.flipped;
-        p.style.transition = "none";
-        p.style.transform = `rotateY(${isFlipped ? -180 : 0}deg)`;
-        p.style.zIndex = isFlipped ? j : (2*this.Np - j);
-        p.querySelectorAll(".turn-shadow").forEach(s => s.style.opacity = 0);
-      }
-      this.gutter && (this.gutter.style.opacity = 0);
-      this.root.style.transform = this.centerShift(this.flipped);
-    } else {
-      this.root.style.transform = "";
-      this.setMobile(this.mIndex, false);
-    }
-    this.onChange(this.currentId());
+  _syncShift(leftIdx = this.pf.getCurrentPageIndex()){
+    this.root.style.transform = this._shiftFor(leftIdx);
   }
-
-  /* ---- angle + shading for one turning paper ---------------------- */
-  setAngle(paper, angle){
-    paper.style.transform = `rotateY(${angle}deg)`;
-    const t = Math.min(1, Math.abs(angle)/180);
-    const fs = paper.querySelector(".paper__face--front .turn-shadow");
-    const bs = paper.querySelector(".paper__face--back .turn-shadow");
-    if(fs) fs.style.opacity = (t*0.5).toFixed(3);
-    if(bs) bs.style.opacity = ((1-t)*0.35).toFixed(3);
-    if(this.gutter) this.gutter.style.opacity = (Math.sin(t*Math.PI)*0.55).toFixed(3);
-  }
-
-  animateTurn(paper, from, to, done){
-    if(reduce){ this.setAngle(paper, to); done(); return; }
-    this.animating = true;
-    const dur = 640, t0 = performance.now();
-    const step = now => {
-      const p = clamp((now - t0)/dur, 0, 1);
-      this.setAngle(paper, from + (to-from)*easeInOut(p));
-      if(p < 1){ requestAnimationFrame(step); }
-      else { this.animating = false; done(); }
-    };
-    requestAnimationFrame(step);
+  /* left index of the spread that contains page idx */
+  _spreadLeft(idx){
+    if(this.pf.getOrientation() !== "landscape" || idx <= 0) return idx;
+    return (idx % 2 === 1) ? idx : idx-1;
   }
 
   /* ---- turn API --------------------------------------------------- */
-  next(){ this.isDesktop ? this.turnForward() : this.setMobile(this.mIndex+1, true); }
-  prev(){ this.isDesktop ? this.turnBack()    : this.setMobile(this.mIndex-1, true); }
-
-  turnForward(){
-    if(this.animating || this.flipped >= this.Np) return;
-    const paper = this.papers[this.flipped];
-    paper.style.transition = "none"; paper.style.zIndex = 3*this.Np;
-    this.root.style.transform = this.centerShift(this.flipped + 1);  // slide to centre as it turns
-    this.animateTurn(paper, 0, -180, () => { this.flipped++; this.layout(false); });
+  next(){
+    const idx = this.pf.getCurrentPageIndex();
+    this._syncShift(idx === 0 ? 1 : idx+2);           // slide while the page turns
+    reduce ? this.pf.turnToNextPage() : this.pf.flipNext();
   }
-  turnBack(){
-    if(this.animating || this.flipped <= 0) return;
-    const paper = this.papers[this.flipped-1];
-    paper.style.transition = "none"; paper.style.zIndex = 3*this.Np;
-    this.root.style.transform = this.centerShift(this.flipped - 1);  // slide to centre as it turns
-    this.animateTurn(paper, -180, 0, () => { this.flipped--; this.layout(false); });
-  }
-
-  /* ---- mobile slide ---------------------------------------------- */
-  setMobile(i, animate){
-    i = clamp(i, 0, this.N-1);
-    this.mIndex = i;
-    if(!this.mrow) return;
-    this.mrow.style.transition = animate ? "transform .5s cubic-bezier(.4,0,.2,1)" : "none";
-    this.mrow.style.transform = `translateX(${-i*(100/this.N)}%)`;
-    this.mrow.querySelectorAll(".mslide__shade").forEach(s => s.style.opacity = 0);
-    this.onChange(this.currentId());
-  }
-
-  /* ---- pointer drag ---------------------------------------------- */
-  bindPointer(){
-    const bookEl = this.root;
-    const TH = 7;                    // movement threshold before a turn begins
-    let mode = null, startX = 0, startY = 0, active = null, pageW = 0, rect = null;
-    let pending = false, pointerId = null;
-
-    // record a candidate; do NOT capture or preventDefault yet, so taps on
-    // links/cards and vertical scrolls still work.
-    const down = e => {
-      if(this.animating || this.dragging) return;
-      pending = true; pointerId = e.pointerId;
-      startX = e.clientX; startY = e.clientY;
-      rect = (this.isDesktop ? bookEl : this.mtrack).getBoundingClientRect();
-      pageW = this.isDesktop ? rect.width/2 : rect.width;
-    };
-
-    const commit = (dx) => {
-      if(this.isDesktop){
-        if(dx < 0 && this.flipped < this.Np){ mode = "fwd"; active = this.papers[this.flipped]; }
-        else if(dx > 0 && this.flipped > 0){ mode = "back"; active = this.papers[this.flipped-1]; }
-        else { pending = false; return false; }
-        active.style.transition = "none"; active.style.zIndex = 3*this.Np;
-      } else { mode = "slide"; }
-      this.dragging = true; pending = false;
-      bookEl.setPointerCapture?.(pointerId);
-      return true;
-    };
-
-    const move = e => {
-      if(pending){
-        const dx = e.clientX - startX, dy = e.clientY - startY;
-        if(Math.abs(dx) < TH && Math.abs(dy) < TH) return;      // still a potential tap
-        if(Math.abs(dy) > Math.abs(dx)){ pending = false; return; } // vertical → let it scroll
-        if(!commit(dx)) return;
-      }
-      if(!this.dragging) return;
-      e.preventDefault();
-      const dx = e.clientX - startX;
-      if(mode === "slide"){
-        const pct = clamp(-dx/pageW, -1, 1);
-        const base = -this.mIndex*(100/this.N);
-        this.mrow.style.transition = "none";
-        this.mrow.style.transform = `translateX(${base - pct*(100/this.N)}%)`;
-        const dir = dx < 0 ? this.mIndex+1 : this.mIndex-1;
-        const sh = this.mrow.children[clamp(dir,0,this.N-1)]?.querySelector(".mslide__shade");
-        if(sh) sh.style.opacity = Math.abs(pct)*0.5;
-      } else {
-        let prog, angle;
-        if(mode === "fwd"){ prog = clamp(-dx/pageW, 0, 1); angle = -180*prog; }
-        else { prog = clamp(dx/pageW, 0, 1); angle = -180 + 180*prog; }
-        this._prog = prog;
-        this.setAngle(active, angle);
-      }
-    };
-
-    const up = e => {
-      if(pending){ pending = false; return; }   // it was a tap → let click handlers run
-      if(!this.dragging) return;
-      this.dragging = false;
-      const dx = e.clientX - startX;
-      if(mode === "slide"){
-        if(Math.abs(dx) > pageW*0.18) this.setMobile(this.mIndex + (dx<0?1:-1), true);
-        else this.setMobile(this.mIndex, true);
-      } else {
-        const prog = this._prog || 0;
-        if(mode === "fwd"){
-          if(prog > 0.32) this.animateTurn(active, -180*prog, -180, () => { this.flipped++; this.layout(false); });
-          else this.animateTurn(active, -180*prog, 0, () => this.layout(false));
-        } else {
-          const ang = -180 + 180*prog;
-          if(prog > 0.32) this.animateTurn(active, ang, 0, () => { this.flipped--; this.layout(false); });
-          else this.animateTurn(active, ang, -180, () => this.layout(false));
-        }
-      }
-      mode = null; active = null; this._prog = 0;
-    };
-
-    bookEl.addEventListener("pointerdown", down);
-    bookEl.addEventListener("pointermove", move, { passive: false });
-    bookEl.addEventListener("pointerup", up);
-    bookEl.addEventListener("pointercancel", up);
-
-    // two-finger horizontal trackpad swipe → exactly ONE page turn per gesture.
-    // A single swipe emits a long stream of wheel events (with momentum). We sum
-    // deltaX across the gesture and turn once it becomes decisive, then lock until
-    // the stream goes quiet — so both directions fire symmetrically and the
-    // momentum tail can't flip through every slide.
-    let wheelAcc = 0, wheelLock = false, wheelEndTimer = null;
-    bookEl.addEventListener("wheel", e => {
-      if(Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;   // vertical-dominant → let inner scroll handle it
-      e.preventDefault();
-      clearTimeout(wheelEndTimer);
-      wheelEndTimer = setTimeout(() => { wheelLock = false; wheelAcc = 0; }, 200);
-      if(wheelLock || this.animating) return;
-      wheelAcc += e.deltaX;
-      if(Math.abs(wheelAcc) < 30) return;    // wait until the swipe is decisive
-      wheelLock = true;                      // one turn per swipe; re-armed after it settles
-      // inverted swipe: swipe right → next, swipe left → previous.
-      if(wheelAcc > 0) this.next(); else this.prev();
-      wheelAcc = 0;
-    }, { passive: false });
+  prev(){
+    const idx = this.pf.getCurrentPageIndex();
+    this._syncShift(clamp(idx-2, 0, this.N-1));
+    reduce ? this.pf.turnToPrevPage() : this.pf.flipPrev();
   }
 
   /* ---- navigation ------------------------------------------------- */
   indexOfId(id){ return this.pages.findIndex(p => p.id === id); }
-  currentId(){
-    if(this.isDesktop){
-      const idx = clamp(2*this.flipped, 0, this.N-1);
-      return this.pages[idx].id;
-    }
-    return this.pages[this.mIndex].id;
-  }
 
-  /* progress / navigation surface used by the controls (scrub bar, labels) */
+  /* report the RIGHT page of the spread (matches the pre-library ids used
+     by the scrub label, hash deep links and nav highlighting) */
+  currentId(){
+    let idx = this.pf.getCurrentPageIndex();
+    if(this.pf.getOrientation() === "landscape" && idx % 2 === 1)
+      idx = Math.min(idx+1, this.N-1);
+    return this.pages[clamp(idx, 0, this.N-1)].id;
+  }
   current(){ return this.currentId(); }
   get total(){ return this.N; }
   progress(){
-    return this.isDesktop
-      ? clamp(2*this.flipped, 0, this.N-1)/(this.N-1)
-      : this.mIndex/(this.N-1);
+    const id = this.currentId();
+    return clamp(this.indexOfId(id), 0, this.N-1)/(this.N-1);
   }
   goToProgress(f){
     const idx = Math.round(f*(this.N-1));
@@ -302,43 +120,40 @@ class Flipbook {
   goToId(id, opts = {}){
     const idx = this.indexOfId(id);
     if(idx < 0) return;
-    if(this.isDesktop){
-      const target = (idx % 2 === 0) ? idx/2 : (idx+1)/2;
-      this.jumpDesktop(target, opts.animate);
-    } else {
-      this.setMobile(idx, opts.animate);
-    }
-    if(opts.after) setTimeout(() => this.runAfter(id, opts.after), opts.animate ? 350 : 30);
-  }
-
-  jumpDesktop(target, animate){
-    target = clamp(target, 0, this.Np);
-    if(!animate || Math.abs(target - this.flipped) > 1 || this.animating){
-      this.flipped = target; this.layout(false); return;
-    }
-    if(target > this.flipped) this.turnForward();
-    else if(target < this.flipped) this.turnBack();
+    const animate = opts.animate && !reduce;
+    this._syncShift(this._spreadLeft(idx));
+    if(animate) this.pf.flip(idx);
+    else this.pf.turnToPage(idx);
+    if(opts.after) setTimeout(() => this.runAfter(id, opts.after), animate ? FLIP_MS + 80 : 30);
   }
 
   runAfter(pageId, after){
-    const wrap = [...this.pagesLayer.querySelectorAll(`.page[data-page-id="${pageId}"]`)]
-      .concat([...(this.mrow?.querySelectorAll(`.page[data-page-id="${pageId}"]`)||[])]);
-    wrap.forEach(w => {
+    this.root.querySelectorAll(`.page[data-page-id="${pageId}"]`).forEach(w => {
       if(after.room && w._highlightRoom) w._highlightRoom(after.room);
       if(after.speaker && w._openBio) w._openBio(after.speaker);
     });
   }
 
-  onResize(){
-    const nowDesktop = this.isDesktop;
-    if(this._wasDesktop === undefined) this._wasDesktop = nowDesktop;
-    if(nowDesktop !== this._wasDesktop){
-      this._wasDesktop = nowDesktop;
-      // keep position roughly in sync across modes
-      if(nowDesktop) this.flipped = clamp(Math.round(this.mIndex/2), 0, this.Np);
-      else this.mIndex = clamp(this.flipped*2, 0, this.N-1);
-      this.layout(false);
-    }
+  /* ---- trackpad: two-finger horizontal swipe → ONE page turn -------
+     A single swipe emits a long stream of wheel events (with momentum). We sum
+     deltaX across the gesture and turn once it becomes decisive, then lock until
+     the stream goes quiet — so both directions fire symmetrically and the
+     momentum tail can't flip through every page. */
+  bindWheel(){
+    let wheelAcc = 0, wheelLock = false, wheelEndTimer = null;
+    this.root.addEventListener("wheel", e => {
+      if(Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;   // vertical-dominant → let inner scroll handle it
+      e.preventDefault();
+      clearTimeout(wheelEndTimer);
+      wheelEndTimer = setTimeout(() => { wheelLock = false; wheelAcc = 0; }, 200);
+      if(wheelLock) return;
+      wheelAcc += e.deltaX;
+      if(Math.abs(wheelAcc) < 30) return;    // wait until the swipe is decisive
+      wheelLock = true;                      // one turn per swipe; re-armed after it settles
+      // inverted swipe: swipe right → next, swipe left → previous.
+      if(wheelAcc > 0) this.next(); else this.prev();
+      wheelAcc = 0;
+    }, { passive: false });
   }
 
   api(){
@@ -349,29 +164,8 @@ class Flipbook {
       current: () => this.currentId(),
       total: this.N,
       indexOfId: id => this.indexOfId(id),
-      gotoBooth: booth => {
-        this.goToId("exhibition-directory", { animate: true });
-        setTimeout(() => {
-          const rows = document.querySelectorAll(`.page[data-page-id="exhibition-directory"] .exh`);
-          rows.forEach(r => {
-            const b = r.querySelector(".b");
-            if(b && b.textContent.trim() === booth){
-              r.style.background = "rgba(198,162,83,.18)";
-              r.scrollIntoView({ block: "center", behavior: "smooth" });
-              setTimeout(() => r.style.background = "", 1600);
-            }
-          });
-        }, 380);
-      },
-      progress: () => this.isDesktop
-        ? clamp(2*this.flipped, 0, this.N-1)/(this.N-1)
-        : this.mIndex/(this.N-1),
-      goToProgress: f => {
-        const idx = Math.round(f*(this.N-1));
-        this.goToId(this.pages[idx].id, { animate: false });
-      }
+      progress: () => this.progress(),
+      goToProgress: f => this.goToProgress(f)
     };
   }
 }
-
-

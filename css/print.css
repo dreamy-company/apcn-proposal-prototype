@@ -1,11 +1,28 @@
-/* print */
+/* print — StPageFlip keeps every page in the DOM but hides inactive ones
+   with inline styles; !important overrides un-hide and flatten them so the
+   whole book prints one page per sheet. */
 @media print {
-  .dock, .scrub, .brandmark, .tools, .notif, .overlay { display: none !important; }
+  .dock, .scrub, .brandmark, .tools, .notif, .overlay, .mnav, .msearch { display: none !important; }
   .stage { display: block; background: #fff; }
-  .book { width: 100%; aspect-ratio: auto; perspective: none; filter: none; }
-  .book__pages { position: static; }
-  .paper { position: static; width: 100%; height: auto; transform: none !important; }
-  .paper__face--front { position: static; page-break-after: always; }
-  .paper__face--back  { position: static; page-break-after: always; transform: none; }
-  .paper__face { position: static; min-height: 60vh; }
+  .book, .stf__wrapper, .stf__block {
+    position: static !important;
+    width: 100% !important; height: auto !important;
+    padding: 0 !important; margin: 0 !important;
+    transform: none !important; perspective: none !important;
+    min-width: 0 !important; max-width: none !important;
+    min-height: 0 !important; max-height: none !important;
+    filter: none !important;
+  }
+  .stf__item {
+    display: block !important;
+    position: static !important;
+    transform: none !important;
+    clip-path: none !important; -webkit-clip-path: none !important;
+    width: 100% !important; height: auto !important;
+    z-index: auto !important;
+    page-break-after: always;
+    min-height: 60vh;
+  }
+  .sheet .page { position: static !important; }
+  .page__body { overflow: visible !important; }
 }
